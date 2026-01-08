@@ -30,12 +30,12 @@ The primary purpose is to show **modularity and lifecycle control**, not to pred
 ## 2. Architecture
 
 
-
+```
 ┌──────────────┐     ┌─────────────┐     ┌──────────────┐     ┌──────────────┐
-│   Fetcher     │ →   │  Strategy   │ →   │   Simulator   │ →   │    PnL        │
-│ (Binance API) │     │ (Signals)   │     │ (Fills)       │     │ (Metrics)     │
+│   Fetcher    │ →   │  Strategy   │ →   │   Simulator  │ →   │    PnL       │
+│ (Binance API)│     │ (Signals)   │     │ (Fills)      │     │ (Metrics)    │
 └──────────────┘     └─────────────┘     └──────────────┘     └──────────────┘
-
+```
 
 
 Each stage has a well-defined contract:
@@ -58,11 +58,10 @@ Responsibilities:
 - millisecond → timestamp conversion
 
 Output format:
-```
 
+```
 timestamp (index)
 open, high, low, close, volume
-
 ```
 
 ### **Strategy**
@@ -191,7 +190,3 @@ pip install -r requirements.txt
 
 This repository is for demonstration and research infrastructure purposes only.
 It is **not** intended to provide trading advice or imply production-grade quality.
-
-```
-
----
