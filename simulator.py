@@ -61,7 +61,6 @@ class TradeSimulator:
                     entry_price = None
                     entry_time = None
 
-            # mark-to-market equity
             if position_qty > 0:
                 current_equity = equity + (price - entry_price) * position_qty
             else:

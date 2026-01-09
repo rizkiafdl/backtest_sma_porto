@@ -34,7 +34,7 @@ class PnLCalculator:
             win_rate_pct = float((pnl > 0).mean() * 100.0)
         else:
             win_rate_pct = 0.0
-
+        print(trades)
         return {
             "start_equity": start_equity,
             "end_equity": end_equity,
@@ -42,4 +42,5 @@ class PnLCalculator:
             "max_drawdown_pct": max_drawdown_pct,
             "num_trades": num_trades,
             "win_rate_pct": win_rate_pct,
+            "trades": trades
         }

@@ -8,7 +8,6 @@ class Signal:
     timestamp: pd.Timestamp
     side: str  # "BUY" or "SELL"
 
-
 class SimpleMovingAverageStrategy:
     def __init__(self, fast_window: int, slow_window: int):
         if fast_window >= slow_window:
