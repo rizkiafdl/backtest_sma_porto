@@ -46,7 +46,7 @@ def parse_args() -> argparse.Namespace:
         required=True,
         help="End date (YYYY-MM-DD)",
     )
-    # Strategy params (simple SMA crossover)
+    
     parser.add_argument(
         "--fast-window",
         type=int,
@@ -79,7 +79,6 @@ def parse_args() -> argparse.Namespace:
 def run_backtest(args: argparse.Namespace) -> None:
     logger = logging.getLogger("Main")
 
-    # 1) Fetch data
     fetcher = MarketDataFetcher()
     df = fetcher.get_historical_ohlcv(
         symbol=args.symbol,
@@ -94,7 +93,6 @@ def run_backtest(args: argparse.Namespace) -> None:
 
     logger.info(f"Fetched {len(df)} candles for {args.symbol} @ {args.interval}")
 
-    # 2) Build strategy
     strategy = SimpleMovingAverageStrategy(
         fast_window=args.fast_window,
         slow_window=args.slow_window,
@@ -103,7 +101,6 @@ def run_backtest(args: argparse.Namespace) -> None:
     signals = strategy.generate_signals(df)
     logger.info(f"Generated {len(signals)} signals")
 
-    # 3) Run simulation
     simulator = TradeSimulator(
         initial_cash=args.initial_cash,
         risk_per_trade=args.risk_per_trade,
@@ -116,7 +113,6 @@ def run_backtest(args: argparse.Namespace) -> None:
 
     logger.info(f"Executed {len(trades)} trades")
 
-    # 4) Compute PnL
     pnl_calc = PnLCalculator()
     summary = pnl_calc.summarize(trades, equity_curve)
 
@@ -146,8 +142,20 @@ def print_summary(args: argparse.Namespace, summary: dict) -> None:
     print(f"Max drawdown     : {summary.get('max_drawdown_pct'):.2f}%")
     print(f"# of trades      : {summary.get('num_trades')}")
     print(f"Win rate         : {summary.get('win_rate_pct'):.2f}%")
+    print("======================================")
+    trades = summary.get("trades", [])
+    if trades:
+        print("Trades:")
+        for t in trades:
+            pnl = (t.exit_price - t.entry_price) * t.qty
+            print(
+                f"{t.entry_time} → {t.exit_time} | "
+                f"entry={t.entry_price:.2f}, exit={t.exit_price:.2f}, "
+                f"qty={t.qty:.5f}, pnl={pnl:.2f}"
+            )
+    else:
+        print("No trades executed.")
     print("======================================\n")
-
 
 def main() -> None:
     args = parse_args()
