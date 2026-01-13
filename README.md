@@ -1,5 +1,5 @@
 # Backtest Package
-a small, modular, vectorized, long-only SMA backtester structured as a Python package, runnable via CLI, with test coverage and clear component boundaries.
+a small, modular, long-only SMA backtester structured as a Python package, runnable via CLI, with test coverage and clear component boundaries.
 
 ## 1. Overview
 
@@ -91,7 +91,7 @@ Computes:
 
 Handles empty-trade cases without error.
 
-## 5. Running the Backtest
+## 4. Running the Backtest
 
 **Run Backtest**
 
@@ -102,6 +102,8 @@ python -m trading_infra.main \
   --start 2024-01-01 \
   --end 2024-01-10
 ```
+Notes : 
+- Executed as a package (must run from outside the folder)
 
 **Structure**
 
@@ -141,9 +143,8 @@ pytest -q -vv
 ```
 
 - Developed and tested on `Python 3.12.9`
-- Executed as a package (must run from outside the folder)
 
-## 6. Future Extensions (if developed further)
+## 5. Future Extensions (if developed further)
 
 Potential upgrades include:
 
