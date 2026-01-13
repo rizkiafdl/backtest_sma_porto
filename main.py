@@ -86,7 +86,7 @@ def run_backtest(args: argparse.Namespace) -> None:
         start=args.start,
         end=args.end,
     )
-    print(df)
+
     if df.empty:
         logger.error("No data returned. Aborting.")
         return
@@ -130,6 +130,20 @@ def print_summary(args: argparse.Namespace, summary: dict) -> None:
       - start_equity
       - end_equity
     """
+    print("======================================\n")
+    trades = summary.get("trades", [])
+    if trades:
+        print("Trades:")
+        for t in trades:
+            pnl = (t.exit_price - t.entry_price) * t.qty
+            print(
+                f"{t.entry_time} → {t.exit_time} | "
+                f"entry={t.entry_price:.2f}, exit={t.exit_price:.2f}, "
+                f"qty={t.qty:.5f}, pnl={pnl:.2f}"
+            )
+    else:
+        print("No trades executed.")
+        
     print("\n========== BACKTEST SUMMARY ==========")
     print(f"Symbol           : {args.symbol}")
     print(f"Interval         : {args.interval}")
@@ -143,19 +157,6 @@ def print_summary(args: argparse.Namespace, summary: dict) -> None:
     print(f"# of trades      : {summary.get('num_trades')}")
     print(f"Win rate         : {summary.get('win_rate_pct'):.2f}%")
     print("======================================")
-    trades = summary.get("trades", [])
-    if trades:
-        print("Trades:")
-        for t in trades:
-            pnl = (t.exit_price - t.entry_price) * t.qty
-            print(
-                f"{t.entry_time} → {t.exit_time} | "
-                f"entry={t.entry_price:.2f}, exit={t.exit_price:.2f}, "
-                f"qty={t.qty:.5f}, pnl={pnl:.2f}"
-            )
-    else:
-        print("No trades executed.")
-    print("======================================\n")
 
 def main() -> None:
     args = parse_args()

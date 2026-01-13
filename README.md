@@ -1,6 +1,5 @@
-# Trading Infra Backtesting Prototype
-
-This project implements a minimal but realistic trading research pipeline with an emphasis on **infrastructure correctness**, **deterministic simulation**, and **reproducible results** rather than alpha discovery. The goal is to demonstrate how data, strategy, execution, and accounting components interact in a research environment.
+# Backtest Package
+a small, modular, vectorized, long-only SMA backtester structured as a Python package, runnable via CLI, with test coverage and clear component boundaries.
 
 ## 1. Overview
 
@@ -9,7 +8,7 @@ The system performs four core functions:
 1. **Market Data Ingestion**
    - Fetches OHLCV historical candles via Binance REST API
    - Normalizes responses to structured DataFrames
-   - Handles pagination, retries, and timestamp conversion
+   - Handles request, retries, and timestamp conversion
 
 2. **Signal Generation (Strategy Layer)**
    - Converts price series into discrete BUY/SELL/FLAT intents
@@ -24,8 +23,6 @@ The system performs four core functions:
    - Produces a time series equity curve for analysis
 
 The primary purpose is to show **modularity and lifecycle control**, not to predict markets.
-
----
 
 ## 2. Architecture
 
@@ -44,8 +41,6 @@ Each stage has a well-defined contract:
 - `Strategy` produces **signal intents**
 - `Simulator` produces **executed trades + equity**
 - `PnLCalculator` produces **performance summary**
-
----
 
 ## 3. Components
 
@@ -96,9 +91,37 @@ Computes:
 
 Handles empty-trade cases without error.
 
----
+## 5. Running the Backtest
 
-## 4. Tests
+**Run Backtest**
+
+```bash
+python -m trading_infra.main \
+  --symbol BTCUSDT \
+  --interval 1h \
+  --start 2024-01-01 \
+  --end 2024-01-10
+```
+
+**Structure**
+
+```
+trading_infra/
+  fetcher.py
+  strategy.py
+  simulator.py
+  pnl.py
+  main.py
+  tests/
+```
+
+**Install**
+
+```bash
+pip install -r trading_infra/requirements.txt
+```
+
+**Tests**
 
 Unit tests cover:
 
@@ -106,32 +129,19 @@ Unit tests cover:
 - strategy signal correctness
 - PnL edge cases (zero trades, positive trades)
 
-External dependencies (Binance) are mocked to ensure deterministic results.
 
 Tests are written using:
 - `pytest`
 - `pytest-mock`
 
----
+Run inside the `trading_infra` folder:
 
-## 5. Limitations & Simplifications
+```bash
+pytest -q -vv
+```
 
-This prototype omits complexities that real trading systems must address:
-
-- no transaction costs
-- no slippage models
-- no latency/clock drift handling
-- no shorting or leverage
-- no multi-asset portfolios
-- no risk management constraints
-- no event-driven data ingestion
-- Binance API data integrity assumed
-- no order routing / book simulation
-- no concurrency or async pipelines
-
-These omissions are intentional to keep the focus on **infrastructure shape**, not market realism.
-
----
+- Developed and tested on `Python 3.12.9`
+- Executed as a package (must run from outside the folder)
 
 ## 6. Future Extensions (if developed further)
 
@@ -145,48 +155,4 @@ Potential upgrades include:
 - risk limits & kill-switch logic
 - strategy registry + config
 - Docker containerization
-- real-time paper trading mode
 - performance visualization dashboard
-
----
-
-## 7. Running the Backtest
-
-Example:
-
-```bash
-python -m trading_infra.main \
-    --symbol BTCUSDT \
-    --interval 1h \
-    --start 2024-01-01 \
-    --end 2024-01-10
-````
-
-Outputs:
-
-* performance summary (stdout)
-* trades list (optional)
-* equity curve (optional csv)
-
----
-
-## 8. Requirements
-
-* Python 3.10+
-* pandas
-* requests
-* pytest (optional)
-* pytest-mock (optional)
-
-Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
----
-
-## 9. Disclaimer
-
-This repository is for demonstration and research infrastructure purposes only.
-It is **not** intended to provide trading advice or imply production-grade quality.

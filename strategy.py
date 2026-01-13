@@ -1,5 +1,7 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
+from abc import ABC, abstractmethod
+
 import pandas as pd
 
 
@@ -8,36 +10,72 @@ class Signal:
     timestamp: pd.Timestamp
     side: str  # "BUY" or "SELL"
 
-class SimpleMovingAverageStrategy:
+
+class BaseStrategy(ABC):
+    """
+    Vectorized strategy base:
+    - input: price DataFrame (with at least 'close')
+    - core output: target_position Series indexed like df.index (e.g. -1, 0, +1)
+    - optional: discrete entry/exit signals derived from position changes
+    """
+
+    @abstractmethod
+    def generate_target_positions(self, df: pd.DataFrame) -> pd.Series:
+        """
+        Given a DataFrame of market data, return a Series of target positions.
+        Convention: -1 = short, 0 = flat, +1 = long (you can limit to {0,1} for long-only).
+        """
+        raise NotImplementedError
+
+    def generate_signals(self, df: pd.DataFrame) -> List[Signal]:
+        """
+        Generic implementation:
+        - Compute target positions
+        - Turn position changes into BUY/SELL signals
+        """
+        positions = self.generate_target_positions(df)
+
+        prev_positions = positions.shift(1).fillna(0)
+
+        buy_mask = (positions == 1) & (prev_positions == 0)
+        sell_mask = (positions == 0) & (prev_positions == 1)
+
+        signals: List[Signal] = []
+
+        for ts in positions.index[buy_mask]:
+            signals.append(Signal(timestamp=ts, side="BUY"))
+
+        for ts in positions.index[sell_mask]:
+            signals.append(Signal(timestamp=ts, side="SELL"))
+
+        return signals
+
+
+class SimpleMovingAverageStrategy(BaseStrategy):
     def __init__(self, fast_window: int, slow_window: int):
         if fast_window >= slow_window:
             raise ValueError("fast_window must be < slow_window")
         self.fast_window = fast_window
         self.slow_window = slow_window
 
-    def generate_signals(self, df: pd.DataFrame) -> List[Signal]:
+    def generate_target_positions(self, df: pd.DataFrame) -> pd.Series:
+        """
+        Long-only SMA crossover:
+        - Go long (1) when fast SMA > slow SMA
+        - Go flat (0) otherwise
+        - Ignore periods where SMAs are not yet fully defined
+        """
         close = df["close"]
+
         fast = close.rolling(self.fast_window).mean()
         slow = close.rolling(self.slow_window).mean()
 
-        signals: List[Signal] = []
-        prev_fast_above = None
+        fast_above = fast > slow
 
-        for ts, f, s in zip(df.index, fast, slow):
-            if pd.isna(f) or pd.isna(s):
-                continue
+        positions = fast_above.astype(int)
 
-            fast_above = f > s
+        invalid = fast.isna() | slow.isna()
+        positions[invalid] = 0
 
-            if prev_fast_above is None:
-                prev_fast_above = fast_above
-                continue
-
-            if fast_above and not prev_fast_above:
-                signals.append(Signal(timestamp=ts, side="BUY"))
-            elif not fast_above and prev_fast_above:
-                signals.append(Signal(timestamp=ts, side="SELL"))
-
-            prev_fast_above = fast_above
-            print(signals)
-        return signals
+        positions.name = "target_position"
+        return positions
