@@ -95,20 +95,11 @@ Handles empty-trade cases without error.
 
 **Run Backtest**
 
-```bash
-python -m trading_infra.main \
-  --symbol BTCUSDT \
-  --interval 1h \
-  --start 2024-01-01 \
-  --end 2024-01-10
-```
-Notes : 
-- Executed as a package (must run from outside the folder)
 
 **Structure**
 
 ```
-trading_infra/
+backtest/
   fetcher.py
   strategy.py
   simulator.py
