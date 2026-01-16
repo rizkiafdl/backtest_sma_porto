@@ -3,7 +3,7 @@ from typing import List, Dict
 import numpy as np
 import pandas as pd
 
-from trading_infra.simulator import Trade
+from backtest.simulator import Trade
 
 
 class PnLCalculator:
