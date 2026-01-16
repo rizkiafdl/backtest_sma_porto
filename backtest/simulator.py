@@ -3,7 +3,7 @@ from typing import List, Tuple
 
 import pandas as pd
 
-from trading_infra.strategy import Signal
+from backtest.strategy import Signal
 
 
 @dataclass
@@ -36,7 +36,7 @@ class TradeSimulator:
         signal_idx = {s.timestamp: s for s in signals}
 
         for ts, price in price_series.items():
-            # process signal first
+         
             if ts in signal_idx:
                 sig = signal_idx[ts]
                 if sig.side == "BUY" and position_qty == 0:

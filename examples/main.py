@@ -4,10 +4,10 @@ from datetime import datetime
 
 import pandas as pd
 
-from trading_infra.fetcher import MarketDataFetcher
-from trading_infra.strategy import SimpleMovingAverageStrategy
-from trading_infra.simulator import TradeSimulator
-from trading_infra.pnl import PnLCalculator
+from backtest.fetcher import MarketDataFetcher
+from backtest.strategy import SimpleMovingAverageStrategy
+from backtest.simulator import TradeSimulator
+from backtest.pnl import PnLCalculator
 
 
 def configure_logging(level: str = "INFO") -> None:
