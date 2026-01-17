@@ -108,11 +108,29 @@ backtest/
   tests/
 ```
 
-**Install**
+## Installation
+
+Clone repository:
 
 ```bash
-pip install -r trading_infra/requirements.txt
+git clone https://github.com/rizkiafdl/backtest_sma_porto.git
 ```
+
+```bash
+cd backtest_sma_porto
+
+pip install -r requirements.txt
+
+pip install -e .
+
+```
+
+Test Import :
+``` bash
+python -c "import backtest; print(dir(backtest))"
+```
+
+Can check examples dir for usage of the package!
 
 **Tests**
 
@@ -127,7 +145,7 @@ Tests are written using:
 - `pytest`
 - `pytest-mock`
 
-Run inside the `trading_infra` folder:
+Run inside the `backtest` folder:
 
 ```bash
 pytest -q -vv
