@@ -61,9 +61,10 @@ class PnLCalculator:
         - start_equity
         - end_equity
         """
-        print("======================================\n")
+  
         trades = self.summary_data.get("trades", [])
         if trades and print_trades:
+            print("======================================\n")
             print("Trades:")
             for t in trades:
                 pnl = (t.exit_price - t.entry_price) * t.qty

@@ -1,5 +1,5 @@
 from .fetcher import MarketDataFetcher
-from .strategy import SimpleMovingAverageStrategy
+from .strategy import SimpleMovingAverageStrategy,BaseStrategy
 from .simulator import TradeSimulator
 from .pnl import PnLCalculator
 
@@ -8,4 +8,5 @@ __all__ = [
     "SimpleMovingAverageStrategy",
     "TradeSimulator",
     "PnLCalculator",
+    "BaseStrategy"
 ]
